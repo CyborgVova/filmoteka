@@ -49,12 +49,6 @@ func NewRepository() *Repository {
 	return &Repository{Conn: conn}
 }
 
-type User struct {
-	id   int
-	name string
-	role string
-}
-
 func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.Film, error) {
 	rows, err := r.Conn.Query(ctx, fmt.Sprintf("select * from films where title similar to '%%%s%%'", title))
 	if err != nil {
@@ -72,13 +66,13 @@ func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.
 	}
 
 	for i, film := range films {
-		films[i].Actors = r.GetAllFilmActors(ctx, film.ID)
+		films[i].Actors = r.getAllFilmActors(ctx, film.ID)
 	}
 
 	return films, nil
 }
 
-func (r *Repository) GetAllFilmActors(ctx context.Context, filmid int) []entities.Actor {
+func (r *Repository) getAllFilmActors(ctx context.Context, filmid int) []entities.Actor {
 	rows, err := r.Conn.Query(ctx, "select actors.* from actors "+
 		"JOIN films_actors ON films_actors.actor_id = actors.id "+
 		"JOIN films ON films.id = films_actors.film_id "+
