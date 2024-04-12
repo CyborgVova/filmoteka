@@ -12,7 +12,7 @@ INSERT INTO films_actors (film_id, actor_id) VALUES
 ( 2, 2 ),
 ( 3, 1 ),
 ( 3, 2 ),
-( 3, 3 ),;
+( 3, 3 );
 -- +goose StatementEnd
 
 -- +goose Down
