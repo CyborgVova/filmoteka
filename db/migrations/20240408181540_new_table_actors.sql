@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS actors (
     dateofbirth date
 );
 
+CREATE INDEX ON actors USING BTREE (lower(fullname));
+
 INSERT INTO actors (fullname, sex, dateofbirth) VALUES 
 (
     'Anita Tsoy',

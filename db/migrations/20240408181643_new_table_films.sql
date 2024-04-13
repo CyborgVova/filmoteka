@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS films (
     rating smallint check (rating >= 0 and rating <= 10)
 );
 
+CREATE INDEX ON films USING BTREE (lower(title));
+
 INSERT INTO films (title, description, release, rating) VALUES
 (
     'Robocop',
