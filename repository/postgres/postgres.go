@@ -51,7 +51,10 @@ func NewRepository() *Repository {
 }
 
 func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.Film, error) {
-	rows, err := r.Conn.Query(ctx, fmt.Sprintf("SELECT * FROM films WHERE lower(title) SIMILAR TO '%%%s%%'", strings.ToLower(title)))
+	rows, err := r.Conn.Query(ctx,
+		fmt.Sprintf("SELECT * FROM films "+
+			"WHERE lower(title) SIMILAR TO '%%%s%%'",
+			strings.ToLower(title)))
 	if err != nil {
 		log.Fatalf("error gettitng films info: %v\n", err)
 		return nil, err
@@ -94,7 +97,10 @@ func (r *Repository) getAllFilmActors(ctx context.Context, filmid int) []entitie
 }
 
 func (r *Repository) GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error) {
-	rows, err := r.Conn.Query(ctx, fmt.Sprintf("SELECT * FROM actors WHERE lower(fullname) SIMILAR TO '%%%s%%'", strings.ToLower(fullname)))
+	rows, err := r.Conn.Query(ctx,
+		fmt.Sprintf("SELECT * FROM actors "+
+			"WHERE lower(fullname) SIMILAR TO '%%%s%%'",
+			strings.ToLower(fullname)))
 	if err != nil {
 		log.Fatal("error getting actors:", err)
 	}
