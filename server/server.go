@@ -27,6 +27,7 @@ func NewServer(conn repository.DBHandler) *Server {
 	}
 
 	mux.HandleFunc("/get_film", serv.GetFilmInfo)
+	mux.HandleFunc("/get_actor", serv.GetActorInfo)
 	return serv
 }
 
@@ -50,6 +51,26 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	b, err := json.MarshalIndent(films, "", "    ")
+	if err != nil {
+		log.Fatal("error serialized:", err)
+	}
+	fmt.Fprint(w, string(b))
+}
+
+func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
+	fullname := r.URL.Query().Get("actor")
+	if fullname == "" {
+		return
+	}
+
+	uc := usecase.UseCase{Repo: s.Conn}
+
+	actors, err := uc.GetActorInfo(context.Background(), fullname)
+	if err != nil {
+		log.Fatal("inner server error: ", err)
+	}
+
+	b, err := json.MarshalIndent(actors, "", "    ")
 	if err != nil {
 		log.Fatal("error serialized:", err)
 	}

@@ -15,7 +15,7 @@ func (u UseCase) GetFilmInfo(ctx context.Context, title string) ([]entities.Film
 	return u.Repo.GetFilmInfo(ctx, title)
 }
 
-func (u UseCase) GetActorInfo(ctx context.Context, fullname string) (entities.Actor, error) {
+func (u UseCase) GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error) {
 	return u.Repo.GetActorInfo(ctx, fullname)
 }
 

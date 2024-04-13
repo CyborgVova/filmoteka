@@ -50,9 +50,9 @@ func NewRepository() *Repository {
 }
 
 func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.Film, error) {
-	rows, err := r.Conn.Query(ctx, fmt.Sprintf("select * from films where title similar to '%%%s%%'", title))
+	rows, err := r.Conn.Query(ctx, fmt.Sprintf("SELECT * FROM films WHERE title SIMILAR TO '%%%s%%'", title))
 	if err != nil {
-		log.Fatalf("error_1: %v\n", err)
+		log.Fatalf("error gettitng films info: %v\n", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -73,12 +73,12 @@ func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.
 }
 
 func (r *Repository) getAllFilmActors(ctx context.Context, filmid int) []entities.Actor {
-	rows, err := r.Conn.Query(ctx, "select actors.* from actors "+
+	rows, err := r.Conn.Query(ctx, "SELECT actors.* FROM actors "+
 		"JOIN films_actors ON films_actors.actor_id = actors.id "+
 		"JOIN films ON films.id = films_actors.film_id "+
 		"WHERE films.id = $1", filmid)
 	if err != nil {
-		log.Fatalf("error_2: %v\n", err)
+		log.Fatalf("error getting all film actors: %v\n", err)
 		return nil
 	}
 	defer rows.Close()
@@ -92,9 +92,42 @@ func (r *Repository) getAllFilmActors(ctx context.Context, filmid int) []entitie
 	return actors
 }
 
-func (r *Repository) GetActorInfo(ctx context.Context, fullname string) (entities.Actor, error) {
-	actor := entities.Actor{}
-	return actor, nil
+func (r *Repository) GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error) {
+	rows, err := r.Conn.Query(ctx, fmt.Sprintf("SELECT * FROM actors WHERE fullname SIMILAR TO '%%%s%%'", fullname))
+	if err != nil {
+		log.Fatal("error getting actors:", err)
+	}
+	defer rows.Close()
+
+	actors := []entities.Actor{}
+	for rows.Next() {
+		actor := entities.Actor{}
+		rows.Scan(&actor.ID, &actor.FullName, &actor.Sex, &actor.DateOfBirth)
+		actors = append(actors, actor)
+	}
+
+	for i, actor := range actors {
+		actors[i].Films = r.getAllFilmsActor(ctx, actor.ID)
+	}
+	return actors, nil
+}
+
+func (r *Repository) getAllFilmsActor(ctx context.Context, actorid int) []entities.Film {
+	rows, err := r.Conn.Query(ctx, "SELECT films.* from films "+
+		"JOIN films_actors ON films_actors.film_id = films.id "+
+		"JOIN actors ON actors.id = films_actors.actor_id "+
+		"WHERE actors.id = $1", actorid)
+	if err != nil {
+		log.Fatal("error getting all films actor:", err)
+	}
+
+	films := []entities.Film{}
+	for rows.Next() {
+		film := entities.Film{}
+		rows.Scan(&film.ID, &film.Title, &film.Description, &film.Release, &film.Rating)
+		films = append(films, film)
+	}
+	return films
 }
 
 func (r *Repository) AddFilm(ctx context.Context, film entities.Film) error {

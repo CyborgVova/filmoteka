@@ -15,7 +15,7 @@ func (s *Service) GetFilmInfo(ctx context.Context, title string) ([]entities.Fil
 	return s.UseCase.GetFilmInfo(ctx, title)
 }
 
-func (s *Service) GetActorInfo(ctx context.Context, fullname string) (entities.Actor, error) {
+func (s *Service) GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error) {
 	return s.UseCase.GetActorInfo(ctx, fullname)
 }
 

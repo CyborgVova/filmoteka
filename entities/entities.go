@@ -10,7 +10,7 @@ type Film struct {
 	Description string  `json:"description"`
 	Release     int     `json:"release"`
 	Rating      int     `json:"rating"`
-	Actors      []Actor `json:"actors"`
+	Actors      []Actor `json:"actors,omitempty"`
 }
 
 type Actor struct {
@@ -18,5 +18,5 @@ type Actor struct {
 	FullName    string    `json:"fullname"`
 	Sex         string    `json:"sex"`
 	DateOfBirth time.Time `json:"dateofbirth"`
-	Films       []Film    `json:"films"`
+	Films       []Film    `json:"films,omitempty"`
 }
