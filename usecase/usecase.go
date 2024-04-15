@@ -19,8 +19,12 @@ func (u UseCase) GetActorInfo(ctx context.Context, fullname string) ([]entities.
 	return u.Repo.GetActorInfo(ctx, fullname)
 }
 
-func (u UseCase) AddFilm(ctx context.Context, film entities.Film) error {
+func (u UseCase) AddFilm(ctx context.Context, film entities.Film) (int, error) {
 	return u.Repo.AddFilm(ctx, film)
+}
+
+func (u UseCase) AddActor(ctx context.Context, actor entities.Actor) (int, error) {
+	return u.Repo.AddActor(ctx, actor)
 }
 
 func (u UseCase) SetFilmInfo(ctx context.Context, film entities.Film) bool {

@@ -4,16 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
+	"github.com/filmoteka/entities"
 	"github.com/filmoteka/repository"
+	"github.com/filmoteka/service"
 	"github.com/filmoteka/usecase"
 )
 
 type Server struct {
-	Conn repository.DBHandler
-	Serv *http.Server
+	Conn    repository.DBHandler
+	Serv    *http.Server
+	Service *service.Service
 }
 
 func NewServer(conn repository.DBHandler) *Server {
@@ -24,10 +28,17 @@ func NewServer(conn repository.DBHandler) *Server {
 			Addr:    ":8080",
 			Handler: mux,
 		},
+		Service: &service.Service{
+			UseCase: &usecase.UseCase{
+				Repo: conn,
+			},
+		},
 	}
 
 	mux.HandleFunc("/get_film", serv.GetFilmInfo)
 	mux.HandleFunc("/get_actor", serv.GetActorInfo)
+	mux.HandleFunc("/add_actor", serv.AddActor)
+	mux.HandleFunc("/add_film", serv.AddFilm)
 	return serv
 }
 
@@ -37,15 +48,32 @@ func (s *Server) Run(ctx context.Context) {
 	log.Fatalf("foo=%s resume=%v", op, s.Serv.ListenAndServe())
 }
 
+func (s *Server) AddActor(w http.ResponseWriter, r *http.Request) {
+	actor := entities.Actor{}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("error reading body:", err)
+	}
+	json.Unmarshal(b, &actor)
+	s.Service.UseCase.AddActor(context.Background(), actor)
+}
+
+func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
+	film := entities.Film{}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("error reading body:", err)
+	}
+	json.Unmarshal(b, &film)
+	s.Service.UseCase.AddFilm(context.Background(), film)
+}
 func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Query().Get("film")
 	if title == "" {
 		return
 	}
 
-	uc := usecase.UseCase{Repo: s.Conn}
-
-	films, err := uc.GetFilmInfo(context.Background(), title)
+	films, err := s.Service.UseCase.Repo.GetFilmInfo(context.Background(), title)
 	if err != nil {
 		log.Fatal("inner server error: ", err)
 	}
@@ -63,9 +91,7 @@ func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uc := usecase.UseCase{Repo: s.Conn}
-
-	actors, err := uc.GetActorInfo(context.Background(), fullname)
+	actors, err := s.Service.UseCase.Repo.GetActorInfo(context.Background(), fullname)
 	if err != nil {
 		log.Fatal("inner server error: ", err)
 	}

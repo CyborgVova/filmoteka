@@ -1,9 +1,5 @@
 package entities
 
-import (
-	"time"
-)
-
 type Film struct {
 	ID          int     `json:"id"`
 	Title       string  `json:"title"`
@@ -14,9 +10,9 @@ type Film struct {
 }
 
 type Actor struct {
-	ID          int       `json:"id"`
-	FullName    string    `json:"fullname"`
-	Sex         string    `json:"sex"`
-	DateOfBirth time.Time `json:"dateofbirth"`
-	Films       []Film    `json:"films,omitempty"`
+	ID          int    `json:"id"`
+	FullName    string `json:"fullname"`
+	Sex         string `json:"sex"`
+	DateOfBirth string `json:"dateofbirth"`
+	Films       []Film `json:"films,omitempty"`
 }

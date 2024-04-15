@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -137,8 +138,28 @@ func (r *Repository) getAllFilmsActor(ctx context.Context, actorid int) []entiti
 	return films
 }
 
-func (r *Repository) AddFilm(ctx context.Context, film entities.Film) error {
-	return nil
+func (r *Repository) AddFilm(ctx context.Context, film entities.Film) (int, error) {
+	row := r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO films (title, description, release, rating) "+
+		"VALUES ('%s', '%s', '%d', '%d') RETURNING ID",
+		film.Title, film.Description, film.Release, film.Rating))
+	var id int
+	row.Scan(&id)
+	if id == 0 {
+		return 0, errors.New("error insert a film")
+	}
+	return id, nil
+}
+
+func (r *Repository) AddActor(ctx context.Context, actor entities.Actor) (int, error) {
+	row := r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO actors (fullname, sex, dateofbirth) "+
+		"VALUES ('%s', '%s', '%s') RETURNING id",
+		actor.FullName, actor.Sex, actor.DateOfBirth))
+	var id int
+	row.Scan(&id)
+	if id == 0 {
+		return 0, errors.New("error insert an actor")
+	}
+	return id, nil
 }
 
 func (r *Repository) SetFilmInfo(ctx context.Context, film entities.Film) bool {
