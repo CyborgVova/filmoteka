@@ -138,7 +138,23 @@ func (r *Repository) getAllFilmsActor(ctx context.Context, actorid int) []entiti
 	return films
 }
 
+func (r *Repository) fillActorsByFilm(ctx context.Context, film entities.Film) {
+	for _, actor := range film.Actors {
+		id, _ := r.AddActor(ctx, actor)
+		if id == 0 {
+			continue
+		}
+		r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO films_actors(film_id, actor_id) "+
+			"VALUES ('%d', '%d')", film.ID, id))
+	}
+}
+
 func (r *Repository) AddFilm(ctx context.Context, film entities.Film) (int, error) {
+	if r.findFilm(ctx, film) != 0 {
+		r.fillActorsByFilm(ctx, film)
+		return 0, errors.New("such film exist yet")
+	}
+
 	row := r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO films (title, description, release, rating) "+
 		"VALUES ('%s', '%s', '%d', '%d') RETURNING ID",
 		film.Title, film.Description, film.Release, film.Rating))
@@ -147,10 +163,35 @@ func (r *Repository) AddFilm(ctx context.Context, film entities.Film) (int, erro
 	if id == 0 {
 		return 0, errors.New("error insert a film")
 	}
+	r.fillActorsByFilm(ctx, film)
 	return id, nil
 }
 
+func (r *Repository) findFilm(ctx context.Context, film entities.Film) (id int) {
+	row := r.Conn.QueryRow(ctx, "SELECT id FROM films "+
+		"WHERE films.title = $1 AND films.release = $2", film.Title, film.Release)
+	row.Scan(&id)
+	return
+}
+
+func (r *Repository) fillFilmsByActor(ctx context.Context, actor entities.Actor) {
+	for _, film := range actor.Films {
+		id, _ := r.AddFilm(ctx, film)
+		if id == 0 {
+			continue
+		}
+		r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO films_actors(film_id, actor_id) "+
+			"VALUES ('%d', '%d')", id, actor.ID))
+	}
+}
+
 func (r *Repository) AddActor(ctx context.Context, actor entities.Actor) (int, error) {
+	item := r.findActor(ctx, actor)
+	if item != 0 {
+		r.fillFilmsByActor(ctx, actor)
+		return 0, errors.New("such actor exist yet")
+	}
+
 	row := r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO actors (fullname, sex, dateofbirth) "+
 		"VALUES ('%s', '%s', '%s') RETURNING id",
 		actor.FullName, actor.Sex, actor.DateOfBirth))
@@ -159,7 +200,20 @@ func (r *Repository) AddActor(ctx context.Context, actor entities.Actor) (int, e
 	if id == 0 {
 		return 0, errors.New("error insert an actor")
 	}
+	r.fillFilmsByActor(ctx, actor)
 	return id, nil
+}
+
+func (r *Repository) findActor(ctx context.Context, actor entities.Actor) (id int) {
+	rows, err := r.Conn.Query(ctx, "SELECT id FROM actors "+
+		"WHERE actors.fullname = $1 AND actors.dayofbirth = $2",
+		actor.FullName, actor.DateOfBirth)
+	if err != nil {
+		log.Fatal("error find actor identificators")
+	}
+
+	rows.Scan(&id)
+	return
 }
 
 func (r *Repository) SetFilmInfo(ctx context.Context, film entities.Film) bool {
