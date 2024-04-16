@@ -115,7 +115,7 @@ func (r *Repository) AddFilm(ctx context.Context, film entities.Film) (int, erro
 
 func (r *Repository) AddActor(ctx context.Context, actor entities.Actor) (int, error) {
 	id := r.findActor(ctx, actor)
-	if id != 0 {
+	if id == 0 {
 		r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO actors (fullname, sex, dateofbirth) "+
 			"VALUES ('%s', '%s', '%s') RETURNING id",
 			actor.FullName, actor.Sex, actor.DateOfBirth)).Scan(&id)
