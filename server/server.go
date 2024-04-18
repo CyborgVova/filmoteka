@@ -39,6 +39,8 @@ func NewServer(conn repository.DBHandler) *Server {
 	mux.HandleFunc("/get_actor", serv.GetActorInfo)
 	mux.HandleFunc("/add_actor", serv.AddActor)
 	mux.HandleFunc("/add_film", serv.AddFilm)
+	mux.HandleFunc("/delete_film", serv.DeleteFilm)
+	mux.HandleFunc("/delete_actor", serv.DeleteActor)
 	return serv
 }
 
@@ -67,6 +69,29 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(b, &film)
 	s.Service.UseCase.AddFilm(context.Background(), film)
 }
+
+func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
+	film := entities.Film{}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("error reading body:", err)
+	}
+
+	json.Unmarshal(b, &film)
+	s.Service.DeleteFilm(context.Background(), film)
+}
+
+func (s *Server) DeleteActor(w http.ResponseWriter, r *http.Request) {
+	actor := entities.Actor{}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("error reading body:", err)
+	}
+
+	json.Unmarshal(b, &actor)
+	s.Service.DeleteActor(context.Background(), actor)
+}
+
 func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Query().Get("film")
 	if title == "" {

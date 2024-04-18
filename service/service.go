@@ -27,6 +27,14 @@ func (s *Service) AddActor(ctx context.Context, actor entities.Actor) (int, erro
 	return s.UseCase.AddActor(ctx, actor)
 }
 
+func (s *Service) DeleteActor(ctx context.Context, actor entities.Actor) bool {
+	return s.UseCase.DeleteActor(ctx, actor)
+}
+
+func (s *Service) DeleteFilm(ctx context.Context, film entities.Film) bool {
+	return s.UseCase.DeleteFilm(ctx, film)
+}
+
 func (s *Service) SetFilmInfo(ctx context.Context, film entities.Film) bool {
 	return s.UseCase.SetFilmInfo(ctx, film)
 }

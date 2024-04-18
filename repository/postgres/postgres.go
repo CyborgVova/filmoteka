@@ -135,6 +135,30 @@ func (r *Repository) SetActorInfo(ctx context.Context, actor entities.Actor) boo
 	return false
 }
 
+func (r *Repository) DeleteActor(ctx context.Context, actor entities.Actor) bool {
+	var id = 0
+	r.Conn.QueryRow(ctx, "SELECT id FROM actors WHERE actor.fullname = $1 "+
+		"AND actor.dateofbirth = $2", actor.FullName, actor.DateOfBirth).Scan(&id)
+	if id != 0 {
+		r.Conn.QueryRow(ctx, "DELETE FROM filmsactors WHERE actor.id = $1", actor.ID)
+		r.Conn.QueryRow(ctx, "DELETE FROM actors WHERE id = $1", actor.ID)
+		return true
+	}
+	return false
+}
+
+func (r *Repository) DeleteFilm(ctx context.Context, film entities.Film) bool {
+	var id = 0
+	r.Conn.QueryRow(ctx, "SELECT id FROM films WHERE title = $1 "+
+		"AND release = $2", film.Title, film.Release).Scan(&id)
+	if id != 0 {
+		r.Conn.QueryRow(ctx, "DELETE FROM filmsactors WHERE film.id = $1", film.ID)
+		r.Conn.QueryRow(ctx, "DELETE FROM films WHERE id = $1", film.ID)
+		return true
+	}
+	return false
+}
+
 func (r *Repository) findFilm(ctx context.Context, film entities.Film) (id int) {
 	r.Conn.QueryRow(ctx, "SELECT id FROM films "+
 		"WHERE films.title = $1 AND films.release = $2",

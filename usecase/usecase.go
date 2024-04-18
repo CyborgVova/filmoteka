@@ -27,6 +27,14 @@ func (u UseCase) AddActor(ctx context.Context, actor entities.Actor) (int, error
 	return u.Repo.AddActor(ctx, actor)
 }
 
+func (u UseCase) DeleteActor(ctx context.Context, actor entities.Actor) bool {
+	return u.Repo.DeleteActor(ctx, actor)
+}
+
+func (u UseCase) DeleteFilm(ctx context.Context, film entities.Film) bool {
+	return u.Repo.DeleteFilm(ctx, film)
+}
+
 func (u UseCase) SetFilmInfo(ctx context.Context, film entities.Film) bool {
 	return u.Repo.SetFilmInfo(ctx, film)
 }
