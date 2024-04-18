@@ -140,8 +140,8 @@ func (r *Repository) DeleteActor(ctx context.Context, actor entities.Actor) bool
 	r.Conn.QueryRow(ctx, "SELECT id FROM actors WHERE actor.fullname = $1 "+
 		"AND actor.dateofbirth = $2", actor.FullName, actor.DateOfBirth).Scan(&id)
 	if id != 0 {
-		r.Conn.QueryRow(ctx, "DELETE FROM filmsactors WHERE actor.id = $1", actor.ID)
-		r.Conn.QueryRow(ctx, "DELETE FROM actors WHERE id = $1", actor.ID)
+		r.Conn.QueryRow(ctx, "DELETE FROM films_actors WHERE actor_id = $1", id)
+		r.Conn.QueryRow(ctx, "DELETE FROM actors WHERE id = $1", id)
 		return true
 	}
 	return false
@@ -152,8 +152,8 @@ func (r *Repository) DeleteFilm(ctx context.Context, film entities.Film) bool {
 	r.Conn.QueryRow(ctx, "SELECT id FROM films WHERE title = $1 "+
 		"AND release = $2", film.Title, film.Release).Scan(&id)
 	if id != 0 {
-		r.Conn.QueryRow(ctx, "DELETE FROM filmsactors WHERE film.id = $1", film.ID)
-		r.Conn.QueryRow(ctx, "DELETE FROM films WHERE id = $1", film.ID)
+		r.Conn.QueryRow(ctx, "DELETE FROM films_actors WHERE film_id = $1", id)
+		r.Conn.QueryRow(ctx, "DELETE FROM films WHERE id = $1", id)
 		return true
 	}
 	return false
