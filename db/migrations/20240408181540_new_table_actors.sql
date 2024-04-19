@@ -13,7 +13,7 @@ INSERT INTO actors (fullname, sex, dateofbirth) VALUES
 (
     'Anita Tsoy',
     'female',
-    '07-07-1982'
+    '07-11-1982'
 ),(
     'Ivan Ivanov',
     'male',

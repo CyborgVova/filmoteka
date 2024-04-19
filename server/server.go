@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/filmoteka/entities"
 	"github.com/filmoteka/repository"
@@ -42,6 +43,8 @@ func NewServer(conn repository.DBHandler) *Server {
 	mux.Handle("/add_film", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.AddFilm))))
 	mux.Handle("/delete_film", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.DeleteFilm))))
 	mux.Handle("/delete_actor", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.DeleteActor))))
+	mux.Handle("/set_actor/{id}", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.SetActorInfo))))
+	mux.Handle("/set_film/{id}", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.SetFilmInfo))))
 	return serv
 }
 
@@ -69,6 +72,34 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 	}
 	json.Unmarshal(b, &film)
 	s.Service.UseCase.AddFilm(context.Background(), film)
+}
+
+func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatal("bad id field:", err)
+	}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("error set actor:", err)
+	}
+	actor := entities.Actor{ID: id}
+	json.Unmarshal(b, &actor)
+	s.Service.SetActorInfo(context.Background(), actor)
+}
+
+func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatal("bad id field:", err)
+	}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("error set film:", err)
+	}
+	film := entities.Film{ID: id}
+	json.Unmarshal(b, &film)
+	s.Service.SetFilmInfo(context.Background(), film)
 }
 
 func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
