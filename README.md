@@ -6,6 +6,10 @@
 
 - Запуск сервиса: `go run cmd/app/app.go`
 
+- Данные для авторизации(Basic):  
+   login: `admin`  
+   password: `secret`  
+
 - Тест в браузере:
   1. Поиск фильма:
      - Точное совпадение: `http://localhost:8080/get_film?film=Robocop 2`
