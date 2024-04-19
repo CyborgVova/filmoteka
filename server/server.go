@@ -38,10 +38,10 @@ func NewServer(conn repository.DBHandler) *Server {
 
 	mux.Handle("/get_film", middleware.Logging(http.HandlerFunc(serv.GetFilmInfo)))
 	mux.Handle("/get_actor", middleware.Logging(http.HandlerFunc(serv.GetActorInfo)))
-	mux.Handle("/add_actor", middleware.Logging(http.HandlerFunc(serv.AddActor)))
-	mux.Handle("/add_film", middleware.Logging(http.HandlerFunc(serv.AddFilm)))
-	mux.Handle("/delete_film", middleware.Logging(http.HandlerFunc(serv.DeleteFilm)))
-	mux.Handle("/delete_actor", middleware.Logging(http.HandlerFunc(serv.DeleteActor)))
+	mux.Handle("/add_actor", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.AddActor))))
+	mux.Handle("/add_film", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.AddFilm))))
+	mux.Handle("/delete_film", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.DeleteFilm))))
+	mux.Handle("/delete_actor", middleware.Logging(middleware.Authorization(http.HandlerFunc(serv.DeleteActor))))
 	return serv
 }
 
