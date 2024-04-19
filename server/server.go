@@ -10,6 +10,7 @@ import (
 
 	"github.com/filmoteka/entities"
 	"github.com/filmoteka/repository"
+	"github.com/filmoteka/server/middleware"
 	"github.com/filmoteka/service"
 	"github.com/filmoteka/usecase"
 )
@@ -35,12 +36,12 @@ func NewServer(conn repository.DBHandler) *Server {
 		},
 	}
 
-	mux.HandleFunc("/get_film", serv.GetFilmInfo)
-	mux.HandleFunc("/get_actor", serv.GetActorInfo)
-	mux.HandleFunc("/add_actor", serv.AddActor)
-	mux.HandleFunc("/add_film", serv.AddFilm)
-	mux.HandleFunc("/delete_film", serv.DeleteFilm)
-	mux.HandleFunc("/delete_actor", serv.DeleteActor)
+	mux.Handle("/get_film", middleware.Logging(http.HandlerFunc(serv.GetFilmInfo)))
+	mux.Handle("/get_actor", middleware.Logging(http.HandlerFunc(serv.GetActorInfo)))
+	mux.Handle("/add_actor", middleware.Logging(http.HandlerFunc(serv.AddActor)))
+	mux.Handle("/add_film", middleware.Logging(http.HandlerFunc(serv.AddFilm)))
+	mux.Handle("/delete_film", middleware.Logging(http.HandlerFunc(serv.DeleteFilm)))
+	mux.Handle("/delete_actor", middleware.Logging(http.HandlerFunc(serv.DeleteActor)))
 	return serv
 }
 

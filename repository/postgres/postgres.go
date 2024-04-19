@@ -65,7 +65,6 @@ func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.
 	for rows.Next() {
 		film := entities.Film{}
 		rows.Scan(&film.ID, &film.Title, &film.Description, &film.Release, &film.Rating)
-
 		films = append(films, film)
 	}
 
