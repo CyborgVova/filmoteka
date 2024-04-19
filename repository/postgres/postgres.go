@@ -65,7 +65,6 @@ func (r *Repository) GetFilmInfo(ctx context.Context, title string) ([]entities.
 	for rows.Next() {
 		film := entities.Film{}
 		rows.Scan(&film.ID, &film.Title, &film.Description, &film.Release, &film.Rating)
-
 		films = append(films, film)
 	}
 
@@ -89,7 +88,9 @@ func (r *Repository) GetActorInfo(ctx context.Context, fullname string) ([]entit
 	actors := []entities.Actor{}
 	for rows.Next() {
 		actor := entities.Actor{}
-		rows.Scan(&actor.ID, &actor.FullName, &actor.Sex, &actor.DateOfBirth)
+		t := time.Time{}
+		rows.Scan(&actor.ID, &actor.FullName, &actor.Sex, &t)
+		actor.DateOfBirth = t.Format("02/01/2006")
 		actors = append(actors, actor)
 	}
 
@@ -214,7 +215,9 @@ func (r *Repository) getAllFilmActors(ctx context.Context, filmid int) []entitie
 	actors := []entities.Actor{}
 	for rows.Next() {
 		actor := entities.Actor{}
-		rows.Scan(&actor.ID, &actor.FullName, &actor.Sex, &actor.DateOfBirth)
+		t := time.Time{}
+		rows.Scan(&actor.ID, &actor.FullName, &actor.Sex, &t)
+		actor.DateOfBirth = t.Format("02/01/2006")
 		actors = append(actors, actor)
 	}
 	return actors
@@ -228,6 +231,7 @@ func (r *Repository) getAllFilmsActor(ctx context.Context, actorid int) []entiti
 	if err != nil {
 		log.Fatal("error getting all films actor:", err)
 	}
+	defer rows.Close()
 
 	films := []entities.Film{}
 	for rows.Next() {
