@@ -74,23 +74,23 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("error set actor:", err)
 	}
-	m := map[string]string{"id": id}
+	m := map[string]interface{}{"id": id}
 	json.Unmarshal(b, &m)
 	s.Service.SetActorInfo(context.Background(), m)
 }
 
 func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("error set film:", err)
 	}
-	m := map[string]string{"id": id}
+	m := map[string]interface{}{"id": id}
 	json.Unmarshal(b, &m)
 	s.Service.SetFilmInfo(context.Background(), m)
 }
