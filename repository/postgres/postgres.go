@@ -128,11 +128,31 @@ func (r *Repository) AddActor(ctx context.Context, actor entities.Actor) (int, e
 	return id, nil
 }
 
-func (r *Repository) SetFilmInfo(ctx context.Context, film entities.Film) bool {
+var filmFields = []string{"title", "description", "release", "rating"}
+
+func (r *Repository) SetFilmInfo(ctx context.Context, m map[string]string) bool {
+	for _, field := range filmFields {
+		if value, ok := m[field]; ok {
+			_, err := r.Conn.Exec(ctx, fmt.Sprintf("UPDATE films SET %s = %v WHERE id = %s", field, value, m["id"]))
+			if err != nil {
+				log.Fatal("error to update film info:", err)
+			}
+		}
+	}
 	return true
 }
 
-func (r *Repository) SetActorInfo(ctx context.Context, actor entities.Actor) bool {
+var actorFields = []string{"fullname", "sex", "dateofbirth"}
+
+func (r *Repository) SetActorInfo(ctx context.Context, m map[string]string) bool {
+	for _, field := range actorFields {
+		if value, ok := m[field]; ok {
+			_, err := r.Conn.Exec(ctx, fmt.Sprintf("UPDATE actors SET %s = %v WHERE actors.id = %s", field, value, m["id"]))
+			if err != nil {
+				log.Fatal("error to update actor info:", err)
+			}
+		}
+	}
 	return false
 }
 

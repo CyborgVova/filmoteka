@@ -13,6 +13,6 @@ type DBHandler interface {
 	AddActor(ctx context.Context, actor entities.Actor) (int, error)
 	DeleteFilm(ctx context.Context, film entities.Film) bool
 	DeleteActor(ctx context.Context, actor entities.Actor) bool
-	SetFilmInfo(ctx context.Context, film entities.Film) bool
-	SetActorInfo(ctx context.Context, actor entities.Actor) bool
+	SetFilmInfo(ctx context.Context, m map[string]string) bool
+	SetActorInfo(ctx context.Context, m map[string]string) bool
 }

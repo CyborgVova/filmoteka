@@ -35,10 +35,10 @@ func (u UseCase) DeleteActor(ctx context.Context, actor entities.Actor) bool {
 	return u.Repo.DeleteActor(ctx, actor)
 }
 
-func (u UseCase) SetFilmInfo(ctx context.Context, film entities.Film) bool {
-	return u.Repo.SetFilmInfo(ctx, film)
+func (u UseCase) SetFilmInfo(ctx context.Context, m map[string]string) bool {
+	return u.Repo.SetFilmInfo(ctx, m)
 }
 
-func (u UseCase) SetActorInfo(ctx context.Context, actor entities.Actor) bool {
-	return u.Repo.SetActorInfo(ctx, actor)
+func (u UseCase) SetActorInfo(ctx context.Context, m map[string]string) bool {
+	return u.Repo.SetActorInfo(ctx, m)
 }

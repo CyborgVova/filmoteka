@@ -35,10 +35,10 @@ func (s *Service) DeleteActor(ctx context.Context, actor entities.Actor) bool {
 	return s.UseCase.DeleteActor(ctx, actor)
 }
 
-func (s *Service) SetFilmInfo(ctx context.Context, film entities.Film) bool {
-	return s.UseCase.SetFilmInfo(ctx, film)
+func (s *Service) SetFilmInfo(ctx context.Context, m map[string]string) bool {
+	return s.UseCase.SetFilmInfo(ctx, m)
 }
 
-func (s *Service) SetActorInfo(ctx context.Context, actor entities.Actor) bool {
-	return s.UseCase.SetActorInfo(ctx, actor)
+func (s *Service) SetActorInfo(ctx context.Context, m map[string]string) bool {
+	return s.UseCase.SetActorInfo(ctx, m)
 }

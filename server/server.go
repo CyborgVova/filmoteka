@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/filmoteka/entities"
 	"github.com/filmoteka/repository"
@@ -75,31 +74,25 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		log.Fatal("bad id field:", err)
-	}
+	id := r.URL.Query().Get("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("error set actor:", err)
 	}
-	actor := entities.Actor{ID: id}
-	json.Unmarshal(b, &actor)
-	s.Service.SetActorInfo(context.Background(), actor)
+	m := map[string]string{"id": id}
+	json.Unmarshal(b, &m)
+	s.Service.SetActorInfo(context.Background(), m)
 }
 
 func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		log.Fatal("bad id field:", err)
-	}
+	id := r.URL.Query().Get("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("error set film:", err)
 	}
-	film := entities.Film{ID: id}
-	json.Unmarshal(b, &film)
-	s.Service.SetFilmInfo(context.Background(), film)
+	m := map[string]string{"id": id}
+	json.Unmarshal(b, &m)
+	s.Service.SetFilmInfo(context.Background(), m)
 }
 
 func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
