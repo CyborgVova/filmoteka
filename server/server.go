@@ -54,6 +54,7 @@ func (s *Server) Run(ctx context.Context) {
 }
 
 func (s *Server) AddActor(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	actor := entities.Actor{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -64,6 +65,7 @@ func (s *Server) AddActor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	film := entities.Film{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -74,6 +76,7 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -85,6 +88,7 @@ func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -96,6 +100,7 @@ func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	film := entities.Film{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -118,6 +123,7 @@ func (s *Server) DeleteActor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	title := r.URL.Query().Get("film")
 	if title == "" {
 		return
@@ -146,6 +152,7 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	fullname := r.URL.Query().Get("actor")
 	if fullname == "" {
 		return
