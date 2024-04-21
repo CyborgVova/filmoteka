@@ -124,10 +124,9 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sortBy := map[string]struct{}{
-		"title":       {},
-		"description": {},
-		"rating":      {},
-		"release":     {}}
+		"title":   {},
+		"rating":  {},
+		"release": {}}
 	order := r.URL.Query().Get("order")
 	_, ok := sortBy[order]
 	if order == "" || !ok {
