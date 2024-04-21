@@ -38,10 +38,14 @@ type Repository struct {
 }
 
 const (
-	dbstring = "postgres://docker:docker@postgres:5432/docker"
+	localhost = "postgres://docker:docker@localhost:5432/docker"
 )
 
 func NewRepository() *Repository {
+	dbstring := os.Getenv("GOOSE_DBSTRING")
+	if dbstring == "" {
+		dbstring = localhost
+	}
 	conn, err := pgx.Connect(context.Background(), dbstring)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)

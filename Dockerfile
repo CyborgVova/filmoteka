@@ -1,8 +1,9 @@
 FROM golang:alpine
 WORKDIR /filmoteka
 COPY . .
-ENV GOOSE_DBSTRING="host=postgres dbname=docker user=docker password=docker sslmode=disable"
+ENV GOOSE_DBSTRING="postgres://docker:docker@postgres/docker?sslmode=disable"
 ENV GOOSE_DRIVER="postgres"
+ENV GOOSE_MIGRATION_DIR="db/migrations"
 EXPOSE 8080
 RUN chmod +x app.sh
-CMD ["sh", "./app.sh"]
+CMD ["./app.sh"]
