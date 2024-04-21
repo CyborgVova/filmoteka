@@ -7,7 +7,7 @@ import (
 )
 
 type DBHandler interface {
-	GetFilmInfo(ctx context.Context, title string) ([]entities.Film, error)
+	GetFilmInfo(ctx context.Context, title, order string) ([]entities.Film, error)
 	GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error)
 	AddFilm(ctx context.Context, film entities.Film) (int, error)
 	AddActor(ctx context.Context, actor entities.Actor) (int, error)

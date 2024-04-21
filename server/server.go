@@ -123,7 +123,18 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	films, err := s.Service.UseCase.Repo.GetFilmInfo(context.Background(), title)
+	sortBy := map[string]struct{}{
+		"title":       {},
+		"description": {},
+		"rating":      {},
+		"release":     {}}
+	order := r.URL.Query().Get("order")
+	_, ok := sortBy[order]
+	if order == "" || !ok {
+		order = "rating"
+	}
+
+	films, err := s.Service.UseCase.Repo.GetFilmInfo(context.Background(), title, order)
 	if err != nil {
 		log.Fatal("inner server error: ", err)
 	}

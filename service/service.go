@@ -11,8 +11,8 @@ type Service struct {
 	UseCase *usecase.UseCase
 }
 
-func (s *Service) GetFilmInfo(ctx context.Context, title string) ([]entities.Film, error) {
-	return s.UseCase.GetFilmInfo(ctx, title)
+func (s *Service) GetFilmInfo(ctx context.Context, title, order string) ([]entities.Film, error) {
+	return s.UseCase.GetFilmInfo(ctx, title, order)
 }
 
 func (s *Service) GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error) {

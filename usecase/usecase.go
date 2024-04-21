@@ -11,8 +11,8 @@ type UseCase struct {
 	Repo repository.DBHandler
 }
 
-func (u UseCase) GetFilmInfo(ctx context.Context, title string) ([]entities.Film, error) {
-	return u.Repo.GetFilmInfo(ctx, title)
+func (u UseCase) GetFilmInfo(ctx context.Context, title, order string) ([]entities.Film, error) {
+	return u.Repo.GetFilmInfo(ctx, title, order)
 }
 
 func (u UseCase) GetActorInfo(ctx context.Context, fullname string) ([]entities.Actor, error) {
