@@ -38,7 +38,7 @@ type Repository struct {
 }
 
 const (
-	dbstring = "postgres://docker:docker@localhost:5432/docker"
+	dbstring = "postgres://docker:docker@postgres:5432/docker"
 )
 
 func NewRepository() *Repository {
