@@ -55,10 +55,14 @@ func NewRepository() *Repository {
 }
 
 func (r *Repository) GetFilmInfo(ctx context.Context, title, order string) ([]entities.Film, error) {
+	ascDesc := "ASC"
+	if order == "rating" {
+		ascDesc = "DESC"
+	}
 	rows, err := r.Conn.Query(ctx,
 		fmt.Sprintf("SELECT * FROM films "+
-			"WHERE lower(title) SIMILAR TO '%%%s%%' ORDER BY %s",
-			strings.ToLower(title), order))
+			"WHERE lower(title) SIMILAR TO '%%%s%%' ORDER BY %s %s",
+			strings.ToLower(title), order, ascDesc))
 	if err != nil {
 		log.Fatalf("error gettitng films info: %v\n", err)
 		return nil, err
