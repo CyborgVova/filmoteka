@@ -54,6 +54,11 @@ func (s *Server) Run(ctx context.Context) {
 }
 
 func (s *Server) AddActor(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 	actor := entities.Actor{}
 	b, err := io.ReadAll(r.Body)
@@ -74,6 +79,11 @@ func (s *Server) AddActor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 	film := entities.Film{}
 	b, err := io.ReadAll(r.Body)
@@ -94,6 +104,11 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
@@ -112,6 +127,11 @@ func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
@@ -129,6 +149,11 @@ func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 	film := entities.Film{}
 	b, err := io.ReadAll(r.Body)
@@ -139,13 +164,21 @@ func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(b, &film)
-	if ok := s.Service.DeleteFilm(context.Background(), film); ok {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "deleted:\n%s", string(b))
+	ok := s.Service.DeleteFilm(context.Background(), film)
+	if !ok {
+		fmt.Fprintf(w, "%d bad request", http.StatusBadRequest)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "deleted:\n%s", string(b))
 }
 
 func (s *Server) DeleteActor(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 	actor := entities.Actor{}
 	b, err := io.ReadAll(r.Body)
@@ -156,14 +189,20 @@ func (s *Server) DeleteActor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(b, &actor)
-	if ok := s.Service.DeleteActor(context.Background(), actor); ok {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "deleted:\n%s", string(b))
+	ok := s.Service.DeleteActor(context.Background(), actor)
+	if !ok {
+		fmt.Fprintf(w, "%d bad request", http.StatusBadRequest)
+		return
 	}
-
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "deleted:\n%s", string(b))
 }
 
 func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	r.Header.Set("Content-Type", "application/json")
 	title := r.URL.Query().Get("film")
 	if title == "" {
@@ -203,6 +242,10 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		fmt.Fprintf(w, "%d method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	r.Header.Set("Content-Type", "application/json")
 	fullname := r.URL.Query().Get("actor")
 	if fullname == "" {

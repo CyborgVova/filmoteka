@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:1.22.1-alpine
 WORKDIR /filmoteka
 COPY . .
 ENV GOOSE_DBSTRING="postgres://docker:docker@postgres/docker?sslmode=disable"

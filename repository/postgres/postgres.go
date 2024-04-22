@@ -112,9 +112,12 @@ func (r *Repository) GetActorInfo(ctx context.Context, fullname string) ([]entit
 func (r *Repository) AddFilm(ctx context.Context, film entities.Film) (int, error) {
 	id := r.findFilm(ctx, film)
 	if id == 0 {
-		r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO films (title, description, release, rating) "+
+		err := r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO films (title, description, release, rating) "+
 			"VALUES ('%s', '%s', '%d', '%d') RETURNING ID",
 			film.Title, film.Description, film.Release, film.Rating)).Scan(&id)
+		if err != nil {
+			return id, err
+		}
 	} else {
 		film.ID = id
 	}
@@ -126,9 +129,12 @@ func (r *Repository) AddFilm(ctx context.Context, film entities.Film) (int, erro
 func (r *Repository) AddActor(ctx context.Context, actor entities.Actor) (int, error) {
 	id := r.findActor(ctx, actor)
 	if id == 0 {
-		r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO actors (fullname, sex, dateofbirth) "+
+		err := r.Conn.QueryRow(ctx, fmt.Sprintf("INSERT INTO actors (fullname, sex, dateofbirth) "+
 			"VALUES ('%s', '%s', '%s') RETURNING id",
 			actor.FullName, actor.Sex, actor.DateOfBirth)).Scan(&id)
+		if err != nil {
+			return id, err
+		}
 	} else {
 		actor.ID = id
 	}

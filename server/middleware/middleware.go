@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -15,7 +16,7 @@ func Authorization(next http.Handler) http.Handler {
 		ctx := context.Background()
 		login, password, ok := r.BasicAuth()
 		if !ok {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			fmt.Fprintf(w, "%d Unauthorized", http.StatusUnauthorized)
 			return
 		}
 		var hash string
@@ -23,7 +24,7 @@ func Authorization(next http.Handler) http.Handler {
 		repo.Conn.QueryRow(ctx, "SELECT password FROM auth WHERE login = $1", login).Scan(&hash)
 		defer repo.Conn.Close(ctx)
 		if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			fmt.Fprintf(w, "%d Unauthorized", http.StatusUnauthorized)
 			return
 		}
 		next.ServeHTTP(w, r)
