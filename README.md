@@ -24,3 +24,5 @@
   - `curl -X PATCH -H "Content-Type: application/json" -d {\"title\": \"Robocop 2(Next Step)\", \"rating\": 9} http://localhost:8080/set_film/2`
   6. Изменить информацию о актере:
   - `curl -X PATCH -H "Content-Type: application/json" -d {\"fullname\": \"Anita Tsoy-Ivanova\"} http://localhost:8080/set_actor/1`
+
+for check
