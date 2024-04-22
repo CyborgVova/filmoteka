@@ -7,3 +7,4 @@ ENV GOOSE_MIGRATION_DIR="db/migrations"
 EXPOSE 8080
 RUN chmod +x app.sh
 CMD ["./app.sh"]
+
