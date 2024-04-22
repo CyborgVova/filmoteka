@@ -10,9 +10,9 @@ services:
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d docker -U docker"]
-      interval: 10s
-      timeout: 5s
-      retries: 7
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   server:
     build: .
