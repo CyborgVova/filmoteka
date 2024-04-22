@@ -126,6 +126,7 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("Content-Type", "application/json")
 	title := r.URL.Query().Get("film")
 	if title == "" {
+		fmt.Fprintf(w, "%d bad request", http.StatusBadRequest)
 		return
 	}
 
@@ -144,6 +145,10 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("inner server error: ", err)
 	}
 
+	if len(films) == 0 {
+		fmt.Fprintf(w, "%d not found", http.StatusNotFound)
+	}
+
 	b, err := json.MarshalIndent(films, "", "    ")
 	if err != nil {
 		log.Fatal("error serialized:", err)
@@ -155,12 +160,17 @@ func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("Content-Type", "application/json")
 	fullname := r.URL.Query().Get("actor")
 	if fullname == "" {
+		fmt.Fprintf(w, "%d bad request", http.StatusBadRequest)
 		return
 	}
 
 	actors, err := s.Service.UseCase.Repo.GetActorInfo(context.Background(), fullname)
 	if err != nil {
 		log.Fatal("inner server error: ", err)
+	}
+
+	if len(actors) == 0 {
+		fmt.Fprintf(w, "%d not found", http.StatusNotFound)
 	}
 
 	b, err := json.MarshalIndent(actors, "", "    ")
