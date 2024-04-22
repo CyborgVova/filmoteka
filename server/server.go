@@ -147,6 +147,7 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 
 	if len(films) == 0 {
 		fmt.Fprintf(w, "%d not found", http.StatusNotFound)
+		return
 	}
 
 	b, err := json.MarshalIndent(films, "", "    ")
@@ -171,6 +172,7 @@ func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
 
 	if len(actors) == 0 {
 		fmt.Fprintf(w, "%d not found", http.StatusNotFound)
+		return
 	}
 
 	b, err := json.MarshalIndent(actors, "", "    ")
