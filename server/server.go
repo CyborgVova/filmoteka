@@ -58,10 +58,19 @@ func (s *Server) AddActor(w http.ResponseWriter, r *http.Request) {
 	actor := entities.Actor{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal("error reading body:", err)
+		log.Printf("method: %s, url: %s, error reading body add actor: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 	json.Unmarshal(b, &actor)
-	s.Service.UseCase.AddActor(context.Background(), actor)
+	id, err := s.Service.UseCase.AddActor(context.Background(), actor)
+	if err != nil {
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		log.Printf("method: %s, url: %s, error adding actor: %s", r.Method, r.URL, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "added actor with id: %d", id)
 }
 
 func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
@@ -69,10 +78,19 @@ func (s *Server) AddFilm(w http.ResponseWriter, r *http.Request) {
 	film := entities.Film{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal("error reading body:", err)
+		log.Printf("method: %s, url: %s, error reading body add film: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 	json.Unmarshal(b, &film)
-	s.Service.UseCase.AddFilm(context.Background(), film)
+	id, err := s.Service.UseCase.AddFilm(context.Background(), film)
+	if err != nil {
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		log.Printf("method: %s, url: %s, error adding film: %s", r.Method, r.URL, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "added film with id: %d", id)
 }
 
 func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
@@ -80,11 +98,17 @@ func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal("error set actor:", err)
+		log.Printf("method: %s, url: %s, error reading body set actor info: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
+
 	m := map[string]interface{}{"id": id}
 	json.Unmarshal(b, &m)
-	s.Service.SetActorInfo(context.Background(), m)
+	if ok := s.Service.SetActorInfo(context.Background(), m); ok {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "set complete:\n%s", string(b))
+	}
 }
 
 func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
@@ -92,11 +116,16 @@ func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal("error set film:", err)
+		log.Printf("method: %s, url: %s, error reading body set film info: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 	m := map[string]interface{}{"id": id}
 	json.Unmarshal(b, &m)
-	s.Service.SetFilmInfo(context.Background(), m)
+	if ok := s.Service.SetFilmInfo(context.Background(), m); ok {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "set complete:\n%s", string(b))
+	}
 }
 
 func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
@@ -104,22 +133,34 @@ func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
 	film := entities.Film{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal("error reading body:", err)
+		log.Printf("method: %s, url: %s, error reading body delete film: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	json.Unmarshal(b, &film)
-	s.Service.DeleteFilm(context.Background(), film)
+	if ok := s.Service.DeleteFilm(context.Background(), film); ok {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "deleted:\n%s", string(b))
+	}
 }
 
 func (s *Server) DeleteActor(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Content-Type", "application/json")
 	actor := entities.Actor{}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal("error reading body:", err)
+		log.Printf("method: %s, url: %s, error reading body delete actor: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	json.Unmarshal(b, &actor)
-	s.Service.DeleteActor(context.Background(), actor)
+	if ok := s.Service.DeleteActor(context.Background(), actor); ok {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "deleted:\n%s", string(b))
+	}
+
 }
 
 func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +183,9 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 
 	films, err := s.Service.UseCase.Repo.GetFilmInfo(context.Background(), title, order)
 	if err != nil {
-		log.Fatal("inner server error: ", err)
+		log.Printf("method: %s, url: %s, error get film info: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	if len(films) == 0 {
@@ -152,7 +195,9 @@ func (s *Server) GetFilmInfo(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.MarshalIndent(films, "", "    ")
 	if err != nil {
-		log.Fatal("error serialized:", err)
+		log.Printf("method: %s, url: %s, error serialized get film info: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 	fmt.Fprint(w, string(b))
 }
@@ -167,7 +212,9 @@ func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
 
 	actors, err := s.Service.UseCase.Repo.GetActorInfo(context.Background(), fullname)
 	if err != nil {
-		log.Fatal("inner server error: ", err)
+		log.Printf("method: %s, url: %s, error get actor info: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	if len(actors) == 0 {
@@ -177,7 +224,9 @@ func (s *Server) GetActorInfo(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.MarshalIndent(actors, "", "    ")
 	if err != nil {
-		log.Fatal("error serialized:", err)
+		log.Printf("method: %s, url: %s, error serialized get actor info: %s", r.Method, r.URL, err)
+		fmt.Fprintf(w, "%d internal server error", http.StatusInternalServerError)
+		return
 	}
 	fmt.Fprint(w, string(b))
 }
