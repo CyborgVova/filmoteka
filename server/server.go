@@ -120,10 +120,13 @@ func (s *Server) SetActorInfo(w http.ResponseWriter, r *http.Request) {
 
 	m := map[string]interface{}{"id": id}
 	json.Unmarshal(b, &m)
-	if ok := s.Service.SetActorInfo(context.Background(), m); ok {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "set complete:\n%s", string(b))
+	ok := s.Service.SetActorInfo(context.Background(), m)
+	if !ok {
+		fmt.Fprintf(w, "%d bad request", http.StatusBadRequest)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "set complete:\n%s", string(b))
 }
 
 func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
@@ -142,10 +145,13 @@ func (s *Server) SetFilmInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	m := map[string]interface{}{"id": id}
 	json.Unmarshal(b, &m)
-	if ok := s.Service.SetFilmInfo(context.Background(), m); ok {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "set complete:\n%s", string(b))
+	ok := s.Service.SetFilmInfo(context.Background(), m)
+	if !ok {
+		fmt.Fprintf(w, "%d bad request", http.StatusBadRequest)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "set complete:\n%s", string(b))
 }
 
 func (s *Server) DeleteFilm(w http.ResponseWriter, r *http.Request) {
